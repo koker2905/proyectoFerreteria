@@ -7,10 +7,20 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
+# Dependency directories
 node_modules
 dist
 dist-ssr
 *.local
+
+# SECCIÓN CRÍTICA: Archivos de entorno y secretos
+# Esto evita que tu API Key de OpenAI se suba a GitHub
+.env
+.env.local
+.env.*.local
+
+# Carpeta de subidas temporales del backend
+mini-back-prueba/uploads/
 
 # Editor directories and files
 .vscode/*
