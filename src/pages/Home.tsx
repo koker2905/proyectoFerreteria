@@ -2,53 +2,31 @@ import React, { useState } from "react";
 import { UploadBox } from "../components/UploadBox";
 import { ResultsPanel } from "../components/ResultsPanel";
 import { HistoryList } from "../components/HistoryList";
-import { apiPredict } from "../api";  // Suponiendo que apiPredict ya está configurado
+import ScannerMultimodal from "../components/ScannerMultimodal";
+import { apiPredict } from "../api";
 import type { HistoryItem } from "../app/types";
 
-// Rutas de las imágenes para cada categoría
 const hammerImages = [
-  "/src/images/Hammer/000030.jpg",
-  "/src/images/Hammer/000031.jpg",
-  "/src/images/Hammer/000140.jpg",
-  "/src/images/Hammer/000202.jpg",
-  "/src/images/Hammer/000212.jpg",
-  "/src/images/Hammer/000282.jpg",
-  "/src/images/Hammer/000379.jpg",
-  "/src/images/Hammer/Hammer (855).JPEG",
-  "/src/images/Hammer/Hammer (871).JPEG",
+  "/src/images/Hammer/000030.jpg", "/src/images/Hammer/000031.jpg", "/src/images/Hammer/000140.jpg",
+  "/src/images/Hammer/000202.jpg", "/src/images/Hammer/000212.jpg", "/src/images/Hammer/000282.jpg",
+  "/src/images/Hammer/000379.jpg", "/src/images/Hammer/Hammer (855).JPEG", "/src/images/Hammer/Hammer (871).JPEG",
   "/src/images/Hammer/Hammer (872).JPEG",
 ];
 
 const screwDriverImages = [
-  "/src/images/Screw Driver/000016.jpg",
-  "/src/images/Screw Driver/000027.jpg",
-  "/src/images/Screw Driver/000096.jpg",
-  "/src/images/Screw Driver/000138.jpg",
-  "/src/images/Screw Driver/000161.jpg",
-  "/src/images/Screw Driver/000231.jpg",
-  "/src/images/Screw Driver/000254.jpg",
-  "/src/images/Screw Driver/000263.jpg",
+  "/src/images/Screw Driver/000016.jpg", "/src/images/Screw Driver/000027.jpg", "/src/images/Screw Driver/000096.jpg",
+  "/src/images/Screw Driver/000138.jpg", "/src/images/Screw Driver/000161.jpg", "/src/images/Screw Driver/000231.jpg",
+  "/src/images/Screw Driver/000254.jpg", "/src/images/Screw Driver/000263.jpg",
 ];
 
 const wrenchImages = [
-  "/src/images/Wrench/000032.jpg",
-  "/src/images/Wrench/000035.jpg",
-  "/src/images/Wrench/000043.jpg",
-  "/src/images/Wrench/000056.jpg",
-  "/src/images/Wrench/000065.jpg",
-  "/src/images/Wrench/000085.jpg",
-  "/src/images/Wrench/000107.jpg",
-  "/src/images/Wrench/000111.jpg",
-  "/src/images/Wrench/000136.jpg",
+  "/src/images/Wrench/000032.jpg", "/src/images/Wrench/000035.jpg", "/src/images/Wrench/000043.jpg",
+  "/src/images/Wrench/000056.jpg", "/src/images/Wrench/000065.jpg", "/src/images/Wrench/000085.jpg",
+  "/src/images/Wrench/000107.jpg", "/src/images/Wrench/000111.jpg", "/src/images/Wrench/000136.jpg",
   "/src/images/Wrench/000144.jpg",
 ];
 
-// Lista de productos con las imágenes de las tres categorías
-const allImages = [
-  ...hammerImages,
-  ...screwDriverImages,
-  ...wrenchImages,
-];
+const allImages = [...hammerImages, ...screwDriverImages, ...wrenchImages];
 
 export function Home() {
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
@@ -57,20 +35,14 @@ export function Home() {
   const [history, setHistory] = useState<HistoryItem[]>([]);
   const [showUpload, setShowUpload] = useState(true);
 
-  const handleCatalogToggle = () => {
-    setCatalogVisible(!catalogVisible); // Alternar visibilidad del catálogo
-  };
-
-  const handleImageSelect = (imageUrl: string) => {
-    setSelectedImage(imageUrl); // Seleccionar imagen
-  };
+  const handleCatalogToggle = () => setCatalogVisible(!catalogVisible);
+  const handleImageSelect = (imageUrl: string) => setSelectedImage(imageUrl);
 
   const handlePredict = async () => {
     if (!selectedImage) {
       alert("Por favor selecciona una imagen para predecir.");
       return;
     }
-
     try {
       const response = await apiPredict(selectedImage);
       setResult(response);
@@ -78,94 +50,83 @@ export function Home() {
         ...prev,
         { id: crypto.randomUUID(), image: selectedImage, response: response },
       ]);
-      setShowUpload(false); // Ocultar la opción de cargar imagen después de predecir
+      setShowUpload(false);
     } catch (error) {
       console.error("Error al predecir", error);
     }
   };
 
   const handleAddImage = (newImageUrl: string) => {
-    allImages.push(newImageUrl); // Agregar la nueva imagen al catálogo
+    allImages.push(newImageUrl);
   };
 
   return (
-    <div>
-      <header>
-        <h1>Reconocimiento de Productos</h1>
-        <p>Asistente inteligente para la clasificación y predicción de productos en ferretería.</p>
+    <div style={{ maxWidth: '800px', margin: '0 auto', padding: '20px' }}>
+      <header style={{ textAlign: 'center', marginBottom: '40px' }}>
+        <h1 style={{ fontSize: '2.5rem', color: '#333' }}>Ferretería Hub</h1>
+        <p style={{ color: '#666' }}>Asistente inteligente para la clasificación y predicción de productos.</p>
       </header>
 
       <main>
-        {/* Botón de mostrar el catálogo */}
-        <section>
-          <h2>Opciones</h2>
-          <button onClick={handleCatalogToggle}>
+        {/* SECCIÓN DEL ASISTENTE MULTIMODAL */}
+        <section style={{ marginBottom: '40px', border: '2px dashed #3b82f6', borderRadius: '15px', padding: '20px' }}>
+          <h2 style={{ textAlign: 'center', color: '#3b82f6' }}>🎤 Asistente por Voz</h2>
+          <ScannerMultimodal />
+        </section>
+
+        <section style={{ marginBottom: '20px' }}>
+          <h2>Opciones de Catálogo</h2>
+          <button onClick={handleCatalogToggle} style={{ padding: '10px 20px', cursor: 'pointer' }}>
             {catalogVisible ? "Cerrar Catálogo" : "Ver Catálogo"}
           </button>
         </section>
 
-        {/* Mostrar catálogo de imágenes como miniaturas */}
         {catalogVisible && (
-          <section>
+          <section style={{ marginBottom: '30px' }}>
             <h2>Catálogo</h2>
-            <div className="grid">
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(100px, 1fr))', gap: '10px' }}>
               {allImages.map((image, index) => (
-                <div key={index} className="productCard" onClick={() => handleImageSelect(image)}>
-                  <img
-                    src={image}
-                    alt={`Imagen ${index + 1}`}
-                    style={{ width: "100px", height: "100px", objectFit: "cover" }}
-                  />
+                <div key={index} onClick={() => handleImageSelect(image)} style={{ cursor: 'pointer' }}>
+                  <img src={image} alt={`Imagen ${index + 1}`} style={{ width: "100%", height: "100px", objectFit: "cover", borderRadius: '8px' }} />
                 </div>
               ))}
             </div>
           </section>
         )}
 
-        {/* Mostrar imagen seleccionada en tamaño grande */}
         {selectedImage && (
-          <section>
+          <section style={{ marginBottom: '30px', textAlign: 'center' }}>
             <h2>Imagen Seleccionada</h2>
-            <img
-              src={selectedImage}
-              alt="Imagen seleccionada"
-              style={{ maxWidth: "100%", maxHeight: "400px", objectFit: "contain" }}
-            />
+            <img src={selectedImage} alt="Seleccionada" style={{ maxWidth: "100%", maxHeight: "400px", borderRadius: '10px' }} />
           </section>
         )}
 
-        {/* Botones de acciones */}
-        <section className="buttons-section">
-          <button onClick={() => setShowUpload(true)}>Subir Imagen</button>
-          <button onClick={handlePredict} disabled={!selectedImage}>
-            Predecir
-          </button>
+        <section style={{ display: 'flex', gap: '10px', marginBottom: '30px' }}>
+          <button onClick={() => setShowUpload(true)} style={{ padding: '10px 20px' }}>Subir Nueva Imagen</button>
+          <button onClick={handlePredict} disabled={!selectedImage} style={{ padding: '10px 20px' }}>Predecir Producto</button>
         </section>
 
-        {/* Subir imagen */}
         {showUpload && (
-          <section>
-            <h2>Sube una imagen para agregarla al catálogo</h2>
+          <section style={{ marginBottom: '30px' }}>
+            <h2>Subir imagen al catálogo</h2>
             <UploadBox onFakePredict={handleAddImage} />
           </section>
         )}
 
-        {/* Mostrar el resultado de la predicción */}
         {result && (
-          <section>
+          <section style={{ marginBottom: '30px' }}>
             <h2>Resultado de la Predicción</h2>
             <ResultsPanel result={result} />
           </section>
         )}
 
-        {/* Mostrar historial de predicciones */}
         <section>
           <h2>Historial de Predicciones</h2>
           <HistoryList items={history} />
         </section>
       </main>
 
-      <footer>
+      <footer style={{ marginTop: '50px', textAlign: 'center', color: '#999' }}>
         <p>&copy; 2026 Ferretería Hub - Todos los derechos reservados</p>
       </footer>
     </div>
