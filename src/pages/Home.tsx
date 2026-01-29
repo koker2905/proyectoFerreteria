@@ -66,23 +66,37 @@ export function Home() {
   };
 
   const handlePredict = async () => {
-    if (!selectedImage) {
-      alert("Por favor selecciona una imagen para predecir.");
-      return;
-    }
+  if (!selectedImage) {
+    alert("Por favor selecciona una imagen para predecir.");
+    return;
+  }
 
-    try {
-      const response = await apiPredict(selectedImage);
-      setResult(response);
+  try {
+    // Hacer la solicitud a FastAPI con la imagen seleccionada
+    const formData = new FormData();
+    formData.append("image", selectedImage); // Aquí usas el archivo de imagen que seleccionaste
+
+    const response = await fetch("http://localhost:8000/predict", {
+      method: "POST",
+      body: formData,
+    });
+
+    const data = await response.json();
+    if (data.prediction) {
+      setResult(data.prediction); // Asignamos el resultado al estado
       setHistory((prev) => [
         ...prev,
-        { id: crypto.randomUUID(), image: selectedImage, response: response },
+        { id: crypto.randomUUID(), image: selectedImage, response: data.prediction },
       ]);
       setShowUpload(false); // Ocultar la opción de cargar imagen después de predecir
-    } catch (error) {
-      console.error("Error al predecir", error);
+    } else {
+      alert("Error en la predicción");
     }
-  };
+  } catch (error) {
+    console.error("Error al predecir", error);
+  }
+};
+
 
   const handleAddImage = (newImageUrl: string) => {
     allImages.push(newImageUrl); // Agregar la nueva imagen al catálogo
